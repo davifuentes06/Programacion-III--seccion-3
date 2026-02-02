@@ -16,7 +16,15 @@ const User = sequelize.define('User', {
     password: {
         type: DataTypes.STRING,
         allowNull: false
-    }
+    },
+    tipo: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'cliente',
+        validate: {
+            isIn: [['admin', 'cliente']]
+        }
+    },
 });
 
 module.exports = User;

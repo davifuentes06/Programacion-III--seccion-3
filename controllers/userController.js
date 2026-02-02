@@ -22,7 +22,8 @@ const register = async (req, res) => {
         const {
             username,
             email,
-            password
+            password,
+            tipo
         } = req.body;
 
         // Verificar si el usuario ya existe
@@ -37,6 +38,13 @@ const register = async (req, res) => {
             });
         }
 
+        // Validar tipo de usuario
+        if (tipo && !['admin', 'cliente'].includes(tipo)) {
+            return res.status(400).json({
+                error: 'Tipo de usuario inválido. Debe ser "admin" o "cliente"'
+            });
+        }
+
         // Encriptar contraseña
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -45,7 +53,8 @@ const register = async (req, res) => {
         const user = await User.create({
             username,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            tipo: tipo || 'cliente'
         });
 
         const userResponse = user.toJSON();
@@ -101,7 +110,8 @@ const login = async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                tipo: user.tipo
             }
         });
     } catch (error) {
